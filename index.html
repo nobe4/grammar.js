@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <textarea id="input" cols="30" rows="10">A /a /e /o as /o sd /e
+B /a A /o b</textarea>
+    <button id="ok">ok</button>
+    <div id="output">No Output</div>
+
+    <script src="jquery.js"></script>
+    <script src="grammar.js"></script>
+    <script>
+    $(document).ready(function() {
+        $("#input").keyup(function(){
+            $("#output").text(parseGrammarInput($(this).val()));
+        })
+        $("#output").text(parseGrammarInput($("#input").val()));
+    });
+    </script>
+</body>
+</html>
