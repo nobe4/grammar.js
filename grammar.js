@@ -1,10 +1,30 @@
 // (function (undefined) {
 
     function log (a, t) {
-        if(!t) console.log(t ? t + " : " + a : a); // display only non typed logs
-        if(t) console.log(t ? t + " : " + a : a); // display only typed logs
-        if(t == "Warning") console.log(t ? t + " : " + a : a); // display only warning logs
-        if(t == "Success") console.log(t ? t + " : " + a : a); // display only warning logs
+        // if(!t) console.log(t ? t + " : " + a : a); // display only non typed logs
+        // if(t) console.log(t ? t + " : " + a : a); // display only typed logs
+        // if(t == "Warning") console.log(t ? t + " : " + a : a); // display only warning logs
+        // if(t == "Success") console.log(t ? t + " : " + a : a); // display only warning logs
+
+
+        if(t == "Grammar"){
+            var s = "";
+            for(var i in a.R){
+                s += a.R[i].NT + " → ";
+                for(var j in a.R[i].G){
+                    for (var k = 0; k < a.R[i].G[j].length; k++) {
+                        if(a.R[i].G[j][k].toString() == "/e") s += "ε ";
+                        else s += a.R[i].G[j][k].toString() + " ";
+                    };
+
+                    if(j != a.R[i].G.length - 1) s += "| ";
+                }
+                s += "\n";
+            }
+            console.log("Print grammar :");
+            console.log(s);
+        }
+
     }
 
     function Grammar(){
@@ -29,19 +49,25 @@
         var g = new Grammar();
 
         // create all symbols in order
-        var symbols = input.replace("\n"," ").split(" ");
-        for(var i in symbols){
-            if(symbols[i] != "/a" && symbols[i] != "/o" && g.S.indexOf(symbols[i]) == -1)
-                g.S.push(symbols[i].replace(" ","").replace("\n",""));
-        }
+        // var symbols = input.replace("\n"," ").split(" ");
+        // for(var i in symbols){
+        //     if(symbols[i] != "/a" && symbols[i] != "/o" && g.S.indexOf(symbols[i]) == -1)
+        //         g.S.push(symbols[i].replace(" ","").replace("\n",""));
+        //     if(g.SS == null)
+        //         g.SS = symbols[i].replace(" ","").replace("\n","");
+        // }
 
-        log(g.S,"Created symbols");
+        // console.log(g);
 
         // separate sequence with linebreak
         var lines = input.split("\n");
 
-        for(i in lines){
+        for(var i = 0; i < lines.length; i++){
+            log(i,"New line");
             var line = lines[i];
+
+            // all rules one by one
+            // if line is empty we
             if(line === "") {
                 log("Line empty");
                 continue;
@@ -58,19 +84,49 @@
                 return log(tokens[1], "Error parsing : should be /a");
             }
 
-            // add the start symbol if it doesn't exist
-            if(g.S.indexOf(tokens[0],0) == -1) {
-                log(tokens[0],"Added in S");
-                // g.NT.
+            log(tokens);
+            var generation = [];
+
+            for (var j = 0; j < tokens.length; j++) {
+                var token = tokens[j];
+                token.replace(/[ ]+/g,'');
+                if(token.length == 0) continue;
+                log(token,"New token")
+
+                if(j === 0) {
+                    if(i === 0){
+                        log(token,"Start symbol");
+                        g.SS = token;
+                    } 
+                    log(token,"New Non Terminal");
+                    g.R[i] = {NT:token,G:[]};
+                }else if(token != "/a") {
+                    if(token == "/o") {
+                        if(generation.length == 0){
+                            log(line,"Error parsing : missing token before /o");
+                            return;
+                        }
+                        log(generation,"New generation");
+                        g.R[i].G.push(generation);
+                        log(g.R[i].G.toString());
+                        generation = [];
+                    }
+                else if(j == tokens.length - 1){
+                    log(token,"Token added to generation");
+                    generation.push(token.toString());
+                    log(generation,"Last generation");
+                    g.R[i].G.push(generation);
+                    log(g.R[i].G.toString());
+                }else{
+                        log(token,"Token added to generation");
+                        generation.push(token.toString());
+                        log(generation.toString());
+                    }
+                }
             }
-
-            // // add all the tokens after the arrow to the rules for the 
-            // for (var i = 2; i < tokens.length; i++) {
-            //     tokens[i]
-            // };
-
         }
 
+        log(g,"Grammar");
 
         
 
